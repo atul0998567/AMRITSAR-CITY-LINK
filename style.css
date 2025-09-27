@@ -1,4 +1,4 @@
-:root {
+ :root {
     /* Primitive Color Tokens */
     --color-white: rgba(255, 255, 255, 1);
     --color-black: rgba(0, 0, 0, 1);
@@ -1189,6 +1189,29 @@ select.form-control {
 .bus-eta {
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
+}
+
+.bus-occupancy {
+    margin-top: var(--space-16);
+    padding: var(--space-12);
+    background: var(--color-bg-5);
+    border-radius: var(--radius-base);
+    color: var(--color-text);
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.bus-occupancy p {
+    margin: 0;
+    font-size: var(--font-size-md);
+}
+
+.bus-occupancy #occupancy-value {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
 }
 
 /* Route Information Panel */
