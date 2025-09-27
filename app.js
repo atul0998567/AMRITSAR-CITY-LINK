@@ -6,6 +6,7 @@ let selectedBus = null;
 let currentLanguage = 'en';
 let searchTimeout;
 let userLocation = null;
+let occupancyInterval = null;
 
 // Bus Data
 const busData = {
@@ -147,7 +148,28 @@ const translations = {
         reportIncident: 'Report Incident',
         requestAssistance: 'Request Assistance',
         highContrast: 'High Contrast',
-        lowData: 'Low Data Mode'
+        lowData: 'Low Data Mode',
+        occupancy: 'Occupancy',
+        eta: 'ETA',
+        status: 'Status',
+        stops: 'Stops',
+        selectStop: 'Select a stop',
+        notifyBefore: 'Notify me',
+        minutesBefore: 'minutes before',
+        alertSet: 'Alert set! You\'ll be notified {{time}} minutes before {{route}} reaches {{stopName}}.',
+        locationError: 'Unable to get your location. Please check your browser settings.',
+        geolocationNotSupported: 'Geolocation is not supported by this browser.',
+        foundNearbyBuses: 'Found {{count}} nearby buses. Showing closest: {{route}}',
+        noNearbyBuses: 'No buses found within 2km of your location.',
+        showAllRoutes: 'Show All Routes',
+        hideAllRoutes: 'Hide All Routes',
+        normalContrast: 'Normal Contrast',
+        normalMode: 'Normal Mode',
+        pleaseSelectStop: 'Please select a stop.',
+        gettingLocation: 'Getting location...',
+        yourLocation: 'Your Location',
+        incidentReported: 'Emergency incident reporting feature activated. Help is on the way!',
+        assistanceRequested: 'Emergency assistance has been requested. Please stay calm and wait for help.'
     },
     pa: {
         subtitle: 'ਰੀਅਲ-ਟਾਈਮ ਬਸ ਟਰੈਕਿੰਗ ਸਿਸਟਮ',
@@ -161,7 +183,28 @@ const translations = {
         stopped: 'ਰੁਕੀ ਹੋਈ',
         routeInfo: 'ਰੂਟ ਜਾਣਕਾਰੀ',
         emergency: 'ਐਮਰਜੈਂਸੀ ਸੇਵਾਵਾਂ',
-        emergencySubtitle: '24/7 ਸਹਾਇਤਾ ਉਪਲਬਧ'
+        emergencySubtitle: '24/7 ਸਹਾਇਤਾ ਉਪਲਬਧ',
+        occupancy: 'ਵਿਅਕਤੀਆਂ ਦੀ ਗਿਣਤੀ',
+        eta: 'ਅਨੁਮਾਨਿਤ ਸਮਾਂ',
+        status: 'ਸਥਿਤੀ',
+        stops: 'ਸਟਾਪਸ',
+        selectStop: 'ਇੱਕ ਸਟਾਪ ਚੁਣੋ',
+        notifyBefore: 'ਮੈਨੂੰ ਸੂਚਿਤ ਕਰੋ',
+        minutesBefore: 'ਮਿੰਟ ਪਹਿਲਾਂ',
+        alertSet: 'ਅਲਰਟ ਸੈੱਟ ਕੀਤਾ ਗਿਆ! ਤੁਹਾਨੂੰ {{route}} ਦੇ {{stopName}} ਪਹੁੰਚਣ ਤੋਂ {{time}} ਮਿੰਟ ਪਹਿਲਾਂ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ।',
+        locationError: 'ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀਆਂ ਬ੍ਰਾਊਜ਼ਰ ਸੈਟਿੰਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ।',
+        geolocationNotSupported: 'ਇਸ ਬ੍ਰਾਊਜ਼ਰ ਦੁਆਰਾ ਭੂ-ਸਥਾਨ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।',
+        foundNearbyBuses: '{{count}} ਨਜ਼ਦੀਕੀ ਬੱਸਾਂ ਮਿਲੀਆਂ। ਸਭ ਤੋਂ ਨਜ਼ਦੀਕੀ ਦਿਖਾ ਰਿਹਾ ਹੈ: {{route}}',
+        noNearbyBuses: 'ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਦੇ 2 ਕਿਲੋਮੀਟਰ ਦੇ ਅੰਦਰ ਕੋਈ ਬੱਸ ਨਹੀਂ ਮਿਲੀ।',
+        showAllRoutes: 'ਸਾਰੇ ਰੂਟ ਦਿਖਾਓ',
+        hideAllRoutes: 'ਸਾਰੇ ਰੂਟ ਲੁਕਾਓ',
+        normalContrast: 'ਸਧਾਰਨ ਕੰਟ੍ਰਾਸਟ',
+        normalMode: 'ਸਧਾਰਨ ਮੋਡ',
+        pleaseSelectStop: 'ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਸਟਾਪ ਚੁਣੋ।',
+        gettingLocation: 'ਟਿਕਾਣਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀਆਂ ਬ੍ਰਾਉਜ਼ਰ ਸੈਟਿੰਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ।',
+        yourLocation: 'ਤੁਹਾਡਾ ਟਿਕਾਣਾ',
+        incidentReported: 'ਐਮਰਜੈਂਸੀ ਘਟਨਾ ਦੀ ਰਿਪੋਰਟਿੰਗ ਵਿਸ਼ੇਸ਼ਤਾ ਕਿਰਿਆਸ਼ੀਲ ਹੋ ਗਈ ਹੈ। ਮਦਦ ਆ ਰਹੀ ਹੈ!',
+        assistanceRequested: 'ਐਮਰਜੈਂਸੀ ਸਹਾਇਤਾ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸ਼ਾਂਤ ਰਹੋ ਅਤੇ ਮਦਦ ਦੀ ਉਡੀਕ ਕਰੋ।'
     },
     hi: {
         subtitle: 'रीयल-टाइम बस ट्रैकिंग सिस्टम',
@@ -175,7 +218,28 @@ const translations = {
         stopped: 'रुकी हुई',
         routeInfo: 'रूट जानकारी',
         emergency: 'आपातकालीन सेवाएं',
-        emergencySubtitle: '24/7 सहायता उपलब्ध'
+        emergencySubtitle: '24/7 सहायता उपलब्ध',
+        occupancy: 'लोगों की संख्या',
+        eta: 'अनुमानित समय',
+        status: 'स्थिति',
+        stops: 'स्टॉप',
+        selectStop: 'एक स्टॉप चुनें',
+        notifyBefore: 'मुझे सूचित करें',
+        minutesBefore: 'मिनट पहले',
+        alertSet: 'अलर्ट सेट! आपको {{route}} के {{stopName}} पहुंचने से {{time}} मिनट पहले सूचित किया जाएगा।',
+        locationError: 'आपका स्थान प्राप्त करने में असमर्थ। कृपया अपनी ब्राउज़र सेटिंग्स जांचें।',
+        geolocationNotSupported: 'इस ब्राउज़र द्वारा जियोलोकेशन समर्थित नहीं है।',
+        foundNearbyBuses: '{{count}} आस-पास की बसें मिलीं। सबसे करीब दिखा रहा है: {{route}}',
+        noNearbyBuses: 'आपके स्थान के 2 किमी के भीतर कोई बस नहीं मिली।',
+        showAllRoutes: 'सभी रूट दिखाएं',
+        hideAllRoutes: 'सभी रूट छिपाएं',
+        normalContrast: 'सामान्य कंट्रास्ट',
+        normalMode: 'सामान्य मोड',
+        pleaseSelectStop: 'कृपया एक स्टॉप चुनें।',
+        gettingLocation: 'आपका स्थान प्राप्त करने में असमर्थ। कृपया अपनी ब्राउज़र सेटिंग्स जांचें।',
+        yourLocation: 'आपका स्थान',
+        incidentReported: 'आपातकालीन घटना रिपोर्टिंग सुविधा सक्रिय हो गई है। मदद रास्ते में है!',
+        assistanceRequested: 'आपातकालीन सहायता का अनुरोध किया गया है। कृपया शांत रहें और मदद की प्रतीक्षा करें।'
     }
 };
 
@@ -251,7 +315,7 @@ function createBusItem(busId, bus) {
             <div class="bus-status ${bus.status}" data-lang="${bus.status}">${getStatusText(bus.status)}</div>
         </div>
         <div class="bus-destination">${bus.destination}</div>
-        <div class="bus-eta">ETA: ${bus.eta}</div>
+        <div class="bus-eta" data-lang="eta">${translations[currentLanguage]['eta']}: ${bus.eta}</div>
     `;
 
     busItem.addEventListener('click', (e) => {
@@ -280,8 +344,8 @@ function addBusMarker(busId, bus) {
             <div class="bus-popup">
                 <strong>${bus.route}</strong><br>
                 <small>${bus.destination}</small><br>
-                <span style="color: ${getStatusColor(bus.status)};">●</span> ${bus.status.toUpperCase()}<br>
-                <strong>ETA: ${bus.eta}</strong>
+                <span style="color: ${getStatusColor(bus.status)};">●</span> ${getStatusText(bus.status)}<br>
+                <strong>${translations[currentLanguage]['eta']}: ${bus.eta}</strong>
             </div>
         `);
 
@@ -333,6 +397,13 @@ function selectBus(busId) {
     // Show route information
     showRouteInfo(busId, bus);
 
+    // Start random occupancy updates
+    if (occupancyInterval) {
+        clearInterval(occupancyInterval);
+    }
+    updateOccupancyDisplay(busId);
+    occupancyInterval = setInterval(() => updateOccupancyDisplay(busId), 5000); // Update every 5 seconds
+
     // Enable action buttons
     const setAlertBtn = document.getElementById('set-alert');
     const addFavoriteBtn = document.getElementById('add-favorite');
@@ -365,6 +436,16 @@ function clearSelection() {
         selectedBus = null;
     }
 
+    // Stop occupancy updates
+    if (occupancyInterval) {
+        clearInterval(occupancyInterval);
+        occupancyInterval = null;
+        const occupancyValueElement = document.getElementById('occupancy-value');
+        if (occupancyValueElement) {
+            occupancyValueElement.textContent = '--';
+        }
+    }
+
     // Hide route info
     const routePanel = document.getElementById('route-info-panel');
     if (routePanel) {
@@ -386,18 +467,33 @@ function showRouteInfo(busId, bus) {
         details.innerHTML = `
             <div style="margin-bottom: 16px;">
                 <h5>${bus.route} - ${bus.destination}</h5>
-                <p><strong>Status:</strong> <span style="color: ${getStatusColor(bus.status)};">●</span> ${bus.status.toUpperCase()}</p>
-                <p><strong>ETA:</strong> ${bus.eta}</p>
+                <p><strong>${translations[currentLanguage]['status']}:</strong> <span style="color: ${getStatusColor(bus.status)};">●</span> ${getStatusText(bus.status)}</p>
+                <p><strong>${translations[currentLanguage]['eta']}:</strong> ${bus.eta}</p>
             </div>
             <div>
-                <h6>Stops:</h6>
+                <h6>${translations[currentLanguage]['stops']}:</h6>
                 <ul style="margin: 8px 0; padding-left: 20px;">
                     ${bus.stops.map(stop => `<li>${stop}</li>`).join('')}
                 </ul>
             </div>
         `;
+        const occupancyElement = details.querySelector('#bus-occupancy');
+        if (occupancyElement) {
+            occupancyElement.style.display = 'block';
+        }
 
         panel.classList.add('show');
+    }
+}
+
+function generateRandomOccupancy() {
+    return Math.floor(Math.random() * 50) + 1; // Random number between 1 and 50
+}
+
+function updateOccupancyDisplay(busId) {
+    const occupancyValueElement = document.getElementById('occupancy-value');
+    if (occupancyValueElement) {
+        occupancyValueElement.textContent = generateRandomOccupancy();
     }
 }
 
@@ -513,14 +609,14 @@ function initializeEventListeners() {
     const reportIncidentBtn = document.getElementById('report-incident');
     if (reportIncidentBtn) {
         reportIncidentBtn.addEventListener('click', () => {
-            showNotification('Emergency incident reporting feature activated. Help is on the way!');
+            showNotification(translations[currentLanguage]['incidentReported']);
         });
     }
 
     const requestAssistanceBtn = document.getElementById('request-assistance');
     if (requestAssistanceBtn) {
         requestAssistanceBtn.addEventListener('click', () => {
-            showNotification('Emergency assistance has been requested. Please stay calm and wait for help.');
+            showNotification(translations[currentLanguage]['assistanceRequested']);
         });
     }
 }
@@ -608,7 +704,7 @@ function getUserLocation() {
     if (navigator.geolocation) {
         const btn = document.getElementById('location-btn');
         const originalText = btn.textContent;
-        btn.textContent = 'Getting location...';
+        btn.textContent = translations[currentLanguage]['gettingLocation'] || 'Getting location...';
         btn.disabled = true;
 
         navigator.geolocation.getCurrentPosition(
@@ -623,7 +719,7 @@ function getUserLocation() {
 
                 window.userMarker = L.marker(userLocation)
                     .addTo(map)
-                    .bindPopup('Your Location')
+                    .bindPopup(translations[currentLanguage]['yourLocation'] || 'Your Location')
                     .openPopup();
 
                 btn.textContent = originalText;
@@ -633,13 +729,13 @@ function getUserLocation() {
                 findNearbyBuses();
             },
             (error) => {
-                showNotification('Unable to get your location. Please check your browser settings.');
+                showNotification(translations[currentLanguage]['locationError']);
                 btn.textContent = originalText;
                 btn.disabled = false;
             }
         );
     } else {
-        showNotification('Geolocation is not supported by this browser.');
+        showNotification(translations[currentLanguage]['geolocationNotSupported']);
     }
 }
 
@@ -663,9 +759,11 @@ function findNearbyBuses() {
         selectBus(closestBus.busId);
 
         // Show notification
-        showNotification(`Found ${nearbyBuses.length} nearby buses. Showing closest: ${closestBus.bus.route}`);
+        showNotification(translations[currentLanguage]['foundNearbyBuses']
+            .replace('{{count}}', nearbyBuses.length)
+            .replace('{{route}}', closestBus.bus.route));
     } else {
-        showNotification('No buses found within 2km of your location.');
+        showNotification(translations[currentLanguage]['noNearbyBuses']);
     }
 }
 
@@ -699,7 +797,7 @@ function toggleAllRoutes() {
         }
     });
 
-    btn.textContent = isShowing ? 'Show All Routes' : 'Hide All Routes';
+    btn.textContent = isShowing ? translations[currentLanguage]['showAllRoutes'] : translations[currentLanguage]['hideAllRoutes'];
 }
 
 function openAlertModal() {
@@ -711,7 +809,7 @@ function openAlertModal() {
 
     if (modal && stopSelect) {
         // Populate stops
-        stopSelect.innerHTML = '<option value="">Select a stop</option>' +
+        stopSelect.innerHTML = `<option value="">${translations[currentLanguage]['selectStop']}</option>` +
             bus.stops.map(stop => `<option value="${stop}">${stop}</option>`).join('');
 
         modal.classList.remove('hidden');
@@ -740,7 +838,10 @@ function setAlert() {
     }
 
     // In a real app, this would set up push notifications
-    showNotification(`Alert set! You'll be notified ${time} minutes before ${busData[selectedBus].route} reaches ${stopName}.`);
+    showNotification(translations[currentLanguage]['alertSet']
+        .replace('{{time}}', time)
+        .replace('{{route}}', busData[selectedBus].route)
+        .replace('{{stopName}}', stopName));
     closeAlertModal();
 }
 
@@ -775,6 +876,8 @@ function updateLanguage() {
         if (translations[currentLanguage] && translations[currentLanguage][key]) {
             if (element.tagName === 'INPUT' && element.type === 'text') {
                 element.placeholder = translations[currentLanguage][key];
+            } else if (element.tagName === 'TITLE') {
+                document.title = translations[currentLanguage][key];
             } else {
                 element.textContent = translations[currentLanguage][key];
             }
@@ -808,7 +911,7 @@ function updateETAs() {
         if (busItem) {
             const etaElement = busItem.querySelector('.bus-eta');
             if (etaElement) {
-                etaElement.textContent = `ETA: ${bus.eta}`;
+                etaElement.textContent = `${translations[currentLanguage]['eta']}: ${bus.eta}`;
             }
         }
     });
@@ -818,7 +921,7 @@ function toggleHighContrast() {
     document.body.classList.toggle('high-contrast');
     const btn = document.getElementById('high-contrast-toggle');
     if (btn) {
-        btn.textContent = document.body.classList.contains('high-contrast') ? 'Normal Contrast' : 'High Contrast';
+        btn.textContent = document.body.classList.contains('high-contrast') ? translations[currentLanguage]['normalContrast'] : translations[currentLanguage]['highContrast'];
     }
 }
 
@@ -826,7 +929,7 @@ function toggleLowDataMode() {
     document.body.classList.toggle('low-data');
     const btn = document.getElementById('low-data-toggle');
     if (btn) {
-        btn.textContent = document.body.classList.contains('low-data') ? 'Normal Mode' : 'Low Data Mode';
+        btn.textContent = document.body.classList.contains('low-data') ? translations[currentLanguage]['normalMode'] : translations[currentLanguage]['lowData'];
     }
 }
 
