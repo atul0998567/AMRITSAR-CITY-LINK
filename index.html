@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amritsar City Link - Real-time Bus Tracking</title>
+    <title data-lang="appTitle">Amritsar City Link - Real-time Bus Tracking</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,8 +14,8 @@
     <div id="loading-screen" class="loading-screen">
         <div class="loading-content">
             <div class="loading-spinner"></div>
-            <h2>Amritsar City Link</h2>
-            <p>Loading bus information...</p>
+            <h2 data-lang="appName">Amritsar City Link</h2>
+            <p data-lang="loadingMessage">Loading bus information...</p>
         </div>
     </div>
 
@@ -26,7 +26,7 @@
             <div class="container">
                 <div class="header-content">
                     <div class="header-left">
-                        <h1 class="app-title">Amritsar City Link</h1>
+                        <h1 class="app-title" data-lang="appName">Amritsar City Link</h1>
                         <p class="app-subtitle" data-lang="subtitle">Real-time Bus Tracking System</p>
                     </div>
                     <div class="header-controls">
@@ -72,7 +72,7 @@
                                 <span data-lang="centerMap">Center Map</span>
                             </button>
                             <button class="btn btn--secondary map-btn" id="toggle-routes">
-                                <span data-lang="toggleRoutes">Show All Routes</span>
+                                <span data-lang="showAllRoutes">Show All Routes</span>
                             </button>
                         </div>
                     </div>
@@ -106,6 +106,9 @@
                 <div class="route-info-content">
                     <div id="route-details">
                         <p data-lang="selectRoute">Select a bus to view route details</p>
+                        <div class="bus-occupancy" id="bus-occupancy">
+                            <p data-lang="occupancy">Occupancy: <span id="occupancy-value">--</span></p>
+                        </div>
                     </div>
                     <div class="route-actions">
                         <button class="btn btn--primary btn--sm" id="set-alert" disabled>
@@ -182,7 +185,7 @@
             <div class="container">
                 <div class="footer-content">
                     <div class="footer-section">
-                        <h4>Amritsar City Link</h4>
+                        <h4 data-lang="appName">Amritsar City Link</h4>
                         <p data-lang="footerDescription">Connecting the city with reliable public transportation</p>
                     </div>
                     <div class="footer-section">
@@ -204,7 +207,7 @@
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    <p>&copy; 2025 Amritsar City Link. All rights reserved.</p>
+                    <p data-lang="copyright">&copy; 2025 Amritsar City Link. All rights reserved.</p>
                 </div>
             </div>
         </footer>
@@ -228,9 +231,9 @@
                 <div class="form-group">
                     <label class="form-label" data-lang="notifyBefore">Notify me</label>
                     <select id="notification-time" class="form-control">
-                        <option value="2">2 minutes before</option>
-                        <option value="5" selected>5 minutes before</option>
-                        <option value="10">10 minutes before</option>
+                        <option value="2">2 <span data-lang="minutesBefore">minutes before</span></option>
+                        <option value="5" selected>5 <span data-lang="minutesBefore">minutes before</span></option>
+                        <option value="10">10 <span data-lang="minutesBefore">minutes before</span></option>
                     </select>
                 </div>
             </div>
